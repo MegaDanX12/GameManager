@@ -1,6 +1,6 @@
-﻿using GameLib.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,10 +16,7 @@ namespace GameManager.Models
         Steam,
         Origin,
         EpicGames,
-        Ubisoft,
-        BattleNet,
-        Rockstar,
-        GOG
+        Ubisoft
     }
 
     /// <summary>
@@ -27,10 +24,20 @@ namespace GameManager.Models
     /// </summary>
     public class GameData
     {
-        /// <summary>
-        /// Informazioni sul gioco.
-        /// </summary>
-        public IGame Data { get; }
+
+        public string Title { get; }
+
+
+        public string GamePath { get; }
+
+
+        public string ExecutableName { get; }
+
+
+        public bool IsRunning { get; }
+
+
+        public DateOnly InstallDate { get; }
 
         /// <summary>
         /// Piattaforma del gioco.
@@ -40,12 +47,9 @@ namespace GameManager.Models
         /// <summary>
         /// Inizializza una nuova istanza di <see cref="GameData"/>.
         /// </summary>
-        /// <param name="Data">Dati sul gioco.</param>
-        /// <param name="Platform">Piattaforma.</param>
-        public GameData(IGame Data, GamePlatform Platform)
+        public GameData()
         {
-            this.Data = Data;
-            this.Platform = Platform;
+            
         }
     }
 }

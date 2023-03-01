@@ -61,16 +61,6 @@ namespace GameManager.Resources {
         }
         
         /// <summary>
-        ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap BattleNet {
-            get {
-                object obj = ResourceManager.GetObject("BattleNet", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Cerca una stringa localizzata simile a Nome eseguibile.
         /// </summary>
         public static string GamesDatagridGameExecutableColumnHeader {
@@ -125,61 +115,11 @@ namespace GameManager.Resources {
         }
         
         /// <summary>
-        ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap GOG {
-            get {
-                object obj = ResourceManager.GetObject("GOG", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Cerca una stringa localizzata simile a Gestore giochi.
         /// </summary>
         public static string MainWindowTitle {
             get {
                 return ResourceManager.GetString("MainWindowTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap pngegg {
-            get {
-                object obj = ResourceManager.GetObject("pngegg", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Rockstar {
-            get {
-                object obj = ResourceManager.GetObject("Rockstar", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Steam_Emblem_700x394 {
-            get {
-                object obj = ResourceManager.GetObject("Steam_Emblem_700x394", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Ubisoft {
-            get {
-                object obj = ResourceManager.GetObject("Ubisoft", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

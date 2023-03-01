@@ -4,24 +4,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:r="clr-namespace:GameManager.Resources"
+        xmlns:vm="clr-namespace:GameManager.Viewmodels"
         mc:Ignorable="d"
         Title="{x:Static r:Resources.MainWindowTitle}" Height="450" Width="800">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
     <Grid>
         <Menu Margin="0,0,0,409" Height="20" VerticalAlignment="Top"/>
-        <DataGrid Margin="0,20,0,0" AutoGenerateColumns="False" ColumnWidth="*" CanUserSortColumns="False" SelectionMode="Single" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+        <DataGrid ItemsSource="{Binding FilteredGames, Mode=OneWay}" Margin="0,20,0,0" AutoGenerateColumns="False" ColumnWidth="*" CanUserSortColumns="False" SelectionMode="Single" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{x:Static r:Resources.GamesDatagridGameTitleColumnHeader}"/>
-                <DataGridTemplateColumn Header="{x:Static r:Resources.GamesDatagridPlatformColumnHeader}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="{x:Static r:Resources.GamesDatagridGamePathColumnHeader}"/>
-                <DataGridTextColumn Header="{x:Static r:Resources.GamesDatagridGameExecutableColumnHeader}"/>
-                <DataGridCheckBoxColumn Header="{x:Static r:Resources.GamesDatagridIsRunningColumnHeader}"/>
-                <DataGridTextColumn Header="{x:Static r:Resources.GamesDatagridInstallDateColumnHeader}"/>
+                <DataGridTextColumn Binding="{Binding Title, Mode=OneWay}" Header="{x:Static r:Resources.GamesDatagridGameTitleColumnHeader}"/>
+                <DataGridTextColumn Binding="{Binding Platform}" Header="{x:Static r:Resources.GamesDatagridPlatformColumnHeader}"/>
+                <DataGridTextColumn Binding="{Binding GamePath, Mode=OneWay}" Header="{x:Static r:Resources.GamesDatagridGamePathColumnHeader}"/>
+                <DataGridTextColumn Binding="{Binding ExecutableName, Mode=OneWay}" Header="{x:Static r:Resources.GamesDatagridGameExecutableColumnHeader}"/>
+                <DataGridCheckBoxColumn Binding="{Binding IsRunning, Mode=OneWay}" Header="{x:Static r:Resources.GamesDatagridIsRunningColumnHeader}"/>
+                <DataGridTextColumn Binding="{Binding InstallDate, StringFormat=d}" Header="{x:Static r:Resources.GamesDatagridInstallDateColumnHeader}"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
