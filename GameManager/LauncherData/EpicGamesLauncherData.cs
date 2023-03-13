@@ -20,6 +20,11 @@ namespace GameManager.LauncherData
         public static string? LibraryPath { get; private set; }
 
         /// <summary>
+        /// Percorso della cartella che contiene i dati del launcher.
+        /// </summary>
+        public static string? LauncherDataPath { get; private set; }
+
+        /// <summary>
         /// Recupera informazioni sul launcher di Epic Games.
         /// </summary>
         public static void RetrieveEpicGamesLauncherData()
@@ -28,10 +33,12 @@ namespace GameManager.LauncherData
             if (LauncherPath is not null)
             {
                 LibraryPath = FindEpicGamesLauncherLibraryPath();
+                LauncherDataPath = FindEpicGamesLauncherDataPath();
             }
             else
             {
                 LibraryPath = null;
+                LauncherDataPath = null;
             }
         }
 
@@ -39,7 +46,7 @@ namespace GameManager.LauncherData
         /// Recupera il percorso del launcher di Epic Games.
         /// </summary>
         /// <returns>Il percorso di installazione.</returns>
-        public static string? FindEpicGamesLauncherPath()
+        private static string? FindEpicGamesLauncherPath()
         {
             RegistryKey UninstallKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall")!;
             string[] SubKeys = UninstallKey.GetSubKeyNames();
@@ -76,7 +83,7 @@ namespace GameManager.LauncherData
         /// Recupera il percorso della libreria di giochi Epic Games.
         /// </summary>
         /// <returns>Il percorso della libreria.</returns>
-        public static string? FindEpicGamesLauncherLibraryPath()
+        private static string? FindEpicGamesLauncherLibraryPath()
         {
             using StreamReader ConfigFile = new(File.OpenRead(Environment.GetEnvironmentVariable("LocalAppData") + "\\EpicGamesLauncher\\Saved\\Config\\Windows\\GameUserSettings.ini"));
             string Line = string.Empty;
@@ -85,6 +92,23 @@ namespace GameManager.LauncherData
                 Line = ConfigFile.ReadLine()!;
             }
             return Line.Replace("DefaultAppInstallLocation=", string.Empty);
+        }
+
+        /// <summary>
+        /// Recupera il percorso della cartella che contiene il file di dati dell'Epic Games Launcher.
+        /// </summary>
+        /// <returns>Il percorso della cartella.</returns>
+        private static string? FindEpicGamesLauncherDataPath()
+        {
+            using RegistryKey? EGLDataKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\WOW6432Node\Epic Games\EpicGamesLauncher");
+            if (EGLDataKey is not null)
+            {
+                return (string?)EGLDataKey.GetValue("AppDataPath");
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

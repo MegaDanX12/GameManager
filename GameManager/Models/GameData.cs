@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameManager.Models
 {
@@ -14,7 +10,7 @@ namespace GameManager.Models
     {
         None,
         Steam,
-        Origin,
+        EA,
         EpicGames,
         Ubisoft
     }
@@ -22,34 +18,51 @@ namespace GameManager.Models
     /// <summary>
     /// Informazioni su un gioco.
     /// </summary>
-    public class GameData
+    public abstract class GameData
     {
+        /// <summary>
+        /// ID univoco.
+        /// </summary>
+        public string? AppID { get; protected init; }
 
-        public string Title { get; }
+        /// <summary>
+        /// Titolo del gioco.
+        /// </summary>
+        public string Title { get; protected init; }
 
+        /// <summary>
+        /// Percorso di installazione.
+        /// </summary>
+        public string GamePath { get; protected init; }
 
-        public string GamePath { get; }
+        /// <summary>
+        /// Nome dell'eseguibile.
+        /// </summary>
+        public string? ExecutableName { get; protected init; }
 
+        /// <summary>
+        /// Parametri di avvio.
+        /// </summary>
+        public string? LaunchArguments { get; protected init; }
 
-        public string ExecutableName { get; }
+        /// <summary>
+        /// Eseguibili.
+        /// </summary>
+        public List<string> Executables { get; protected init; } = new();
 
+        /// <summary>
+        /// Indica se il gioco è in esecuzione.
+        /// </summary>
+        public bool IsRunning { get; set; }
 
-        public bool IsRunning { get; }
-
-
-        public DateOnly InstallDate { get; }
+        /// <summary>
+        /// Data di installazione.
+        /// </summary>
+        public DateTime InstallDate { get; protected init; }
 
         /// <summary>
         /// Piattaforma del gioco.
         /// </summary>
-        public GamePlatform Platform { get; }
-
-        /// <summary>
-        /// Inizializza una nuova istanza di <see cref="GameData"/>.
-        /// </summary>
-        public GameData()
-        {
-            
-        }
+        public GamePlatform Platform { get; protected init; }
     }
 }

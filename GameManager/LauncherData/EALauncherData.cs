@@ -2,12 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Linq;
 
 namespace GameManager.LauncherData
 {
     /// <summary>
-    /// Informazioni sul launcher di Origin.
+    /// Informazioni sul launcher EA.
     /// </summary>
     public static class EALauncherData
     {

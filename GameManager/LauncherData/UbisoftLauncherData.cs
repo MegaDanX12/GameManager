@@ -27,7 +27,7 @@ namespace GameManager.LauncherData
             LauncherPath = FindUbisoftLauncherPath();
             if (LauncherPath is not null)
             {
-
+                LibraryPath = FindUbisoftLauncherLibraryPath();
             }
             else
             {
@@ -64,7 +64,7 @@ namespace GameManager.LauncherData
             {
                 Line = ConfigFile.ReadLine()!;
             }
-            return Line.Replace("game_installation_path: ", string.Empty).Replace('/', '\\');
+            return Line.Replace("game_installation_path:", string.Empty).Replace('/', '\\').TrimStart();
         }
     }
 }

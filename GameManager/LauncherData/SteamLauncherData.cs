@@ -58,13 +58,13 @@ namespace GameManager.LauncherData
         /// </summary>
         private static void FindSteamLibrariesPath()
         {
-            FileStream LibrariesDataFile = File.OpenRead(LauncherPath + "\\steamapps\\libraryfolders.vdf");
+            using FileStream LibrariesDataFile = File.OpenRead(LauncherPath + "\\steamapps\\libraryfolders.vdf");
             KVSerializer Deserializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
             KVObject Data = Deserializer.Deserialize(LibrariesDataFile);
             string LibraryPath;
             foreach (KVObject child in Data.Children)
             {
-                LibraryPath = (string)child["path"];
+                LibraryPath = (string)child["path"] + "\\steamapps";
                 if (Directory.Exists(LibraryPath))
                 {
                     LibrariesPath!.Add(LibraryPath);
