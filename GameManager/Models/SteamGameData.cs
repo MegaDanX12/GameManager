@@ -1,6 +1,7 @@
 ﻿using GameManager.LauncherData;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,11 @@ namespace GameManager.Models
         public string? AppLaunchString { get; private init; }
 
         /// <summary>
+        /// Icona.
+        /// </summary>
+        private readonly string IconPath;
+
+        /// <summary>
         /// Inizializza una nuova istanza di <see cref="SteamGameData"/>.
         /// </summary>
         /// <param name="ManifestFilePath">Percorso del manifesto che descrive il gioco.</param>
@@ -42,7 +48,7 @@ namespace GameManager.Models
             AppID = (string)Data["appid"];
             Title = (string)Data["name"];
             GamePath = LibraryPath + "\\common\\" + (string)Data["installdir"];
-            using FileStream AppInfoFile = File.OpenRead(SteamLauncherData.LauncherPath + "\\appcache\\appinfo.vdf");
+            using FileStream AppInfoFile = File.OpenRead(Path.GetDirectoryName(SteamLauncherData.LauncherPath) + "\\appcache\\appinfo.vdf");
             using BinaryReader Reader = new(AppInfoFile, Encoding.Default, true);
             uint MagicValue = Reader.ReadUInt32();
             if (MagicValue is not Magic && MagicValue is not Magic28)
@@ -78,6 +84,8 @@ namespace GameManager.Models
             KVObject AppInfoData = Deserializer.Deserialize(AppInfoFile);
             if ((string)AppInfoData["common"]["type"] is "Game" or "game")
             {
+                string IconName = (string)AppInfoData["common"]["clienticon"];
+                IconPath = Path.GetDirectoryName(SteamLauncherData.LauncherPath) + "\\steam\\games\\" + IconName + ".ico";
                 List<KVObject> LaunchData = ((IEnumerable<KVObject>)AppInfoData["config"]["launch"]).ToList();
                 for (byte i = 0; i < LaunchData.Count; i++)
                 {
@@ -98,6 +106,67 @@ namespace GameManager.Models
             }
             InstallDate = Directory.GetCreationTime(GamePath);
             Platform = GamePlatform.Steam;
+        }
+
+        public override bool StartGame()
+        {
+            if (!Process.GetProcessesByName("Steam").Any())
+            {
+                using Process? LauncherProcess = Process.Start(SteamLauncherData.LauncherPath!);
+                if (LauncherProcess is not null)
+                {
+                    if (!LauncherProcess.WaitForInputIdle(10000))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            using Process? GameProcess = Process.Start(AppLaunchString!);
+            if (GameProcess is not null)
+            {
+                GameProcess.EnableRaisingEvents = true;
+                GameProcess.Exited += GameProcess_Exited;
+                IsRunning = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void GameProcess_Exited(object? sender, EventArgs e)
+        {
+            IsRunning = false;
+        }
+
+        public override bool UninstallGame()
+        {
+            using Process? SteamProcess = Process.Start(SteamLauncherData.LauncherPath!, "steam://uninstall/" + AppID);
+            if (SteamProcess is not null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override bool CreateShortcut()
+        {
+            string DesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            using StreamWriter Writer = new(DesktopPath + "\\" + Title + ".url");
+            Writer.WriteLine("[InternetShortcut]");
+            Writer.WriteLine("URL=" + AppLaunchString);
+            Writer.WriteLine("IconIndex=0");
+            Writer.WriteLine("IconFile=" + IconPath);
+            Writer.Flush();
+            return true;
         }
     }
 }

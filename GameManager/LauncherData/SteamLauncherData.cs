@@ -18,7 +18,7 @@ namespace GameManager.LauncherData
         /// <summary>
         /// Percorsi librerie.
         /// </summary>
-        public static List<string>? LibrariesPath { get; private set; } = new();
+        public static List<string> LibrariesPath { get; private set; } = new();
 
         /// <summary>
         /// Recupera informazioni sul launcher di Steam.
@@ -29,10 +29,6 @@ namespace GameManager.LauncherData
             if (LauncherPath is not null)
             {
                 FindSteamLibrariesPath();
-            }
-            else
-            {
-                LibrariesPath = null;
             }
         }
 
@@ -45,7 +41,7 @@ namespace GameManager.LauncherData
             using RegistryKey? SteamKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam");
             if (SteamKey is not null)
             {
-                return (string?)SteamKey.GetValue("InstallPath");
+                return ((string?)SteamKey.GetValue("InstallPath")) + "\\steam.exe";
             }
             else
             {
@@ -58,16 +54,19 @@ namespace GameManager.LauncherData
         /// </summary>
         private static void FindSteamLibrariesPath()
         {
-            using FileStream LibrariesDataFile = File.OpenRead(LauncherPath + "\\steamapps\\libraryfolders.vdf");
-            KVSerializer Deserializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
-            KVObject Data = Deserializer.Deserialize(LibrariesDataFile);
-            string LibraryPath;
-            foreach (KVObject child in Data.Children)
+            if (File.Exists(Path.GetDirectoryName(LauncherPath) + "\\steamapps\\libraryfolders.vdf"))
             {
-                LibraryPath = (string)child["path"] + "\\steamapps";
-                if (Directory.Exists(LibraryPath))
+                using FileStream LibrariesDataFile = File.OpenRead(Path.GetDirectoryName(LauncherPath) + "\\steamapps\\libraryfolders.vdf");
+                KVSerializer Deserializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
+                KVObject Data = Deserializer.Deserialize(LibrariesDataFile);
+                string LibraryPath;
+                foreach (KVObject child in Data.Children)
                 {
-                    LibrariesPath!.Add(LibraryPath);
+                    LibraryPath = (string)child["path"] + "\\steamapps";
+                    if (Directory.Exists(LibraryPath))
+                    {
+                        LibrariesPath.Add(LibraryPath);
+                    }
                 }
             }
         }

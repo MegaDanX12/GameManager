@@ -59,7 +59,7 @@ namespace GameManager.LauncherData
                 if (DisplayName is not null && DisplayName is "Epic Games Launcher")
                 {
                     UninstallKey.Close();
-                    return (string)ApplicationKey.GetValue("InstallLocation")! + "Launcher\\Portal\\";
+                    return (string)ApplicationKey.GetValue("InstallLocation")! + "Launcher\\Portal\\Binaries\\Win64\\EpicGamesLauncher.exe";
                 }
             }
             UninstallKey.Close();
@@ -72,7 +72,7 @@ namespace GameManager.LauncherData
                 if (DisplayName is not null && DisplayName is "Epic Games Launcher")
                 {
                     UninstallKey.Close();
-                    return (string)ApplicationKey.GetValue("InstallLocation")! + "Launcher\\Portal\\";
+                    return (string)ApplicationKey.GetValue("InstallLocation")! + "Launcher\\Portal\\Binaries\\Win64\\EpicGamesLauncher.exe";
                 }
             }
             UninstallKey.Close();
@@ -85,13 +85,20 @@ namespace GameManager.LauncherData
         /// <returns>Il percorso della libreria.</returns>
         private static string? FindEpicGamesLauncherLibraryPath()
         {
-            using StreamReader ConfigFile = new(File.OpenRead(Environment.GetEnvironmentVariable("LocalAppData") + "\\EpicGamesLauncher\\Saved\\Config\\Windows\\GameUserSettings.ini"));
-            string Line = string.Empty;
-            while (!Line.Contains("DefaultAppInstallLocation"))
+            try
             {
-                Line = ConfigFile.ReadLine()!;
+                using StreamReader ConfigFile = new(File.OpenRead(Environment.GetEnvironmentVariable("LocalAppData") + "\\EpicGamesLauncher\\Saved\\Config\\Windows\\GameUserSettings.ini"));
+                string Line = string.Empty;
+                while (!Line.Contains("DefaultAppInstallLocation"))
+                {
+                    Line = ConfigFile.ReadLine()!;
+                }
+                return Line.Replace("DefaultAppInstallLocation=", string.Empty);
             }
-            return Line.Replace("DefaultAppInstallLocation=", string.Empty);
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>

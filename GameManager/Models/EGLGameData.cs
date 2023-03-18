@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿using GameManager.LauncherData;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace GameManager.Models
 {
@@ -64,7 +68,60 @@ namespace GameManager.Models
             }
             InstallDate = Directory.GetCreationTime(GamePath);
             Platform = GamePlatform.EpicGames;
-            AppLaunchString = "com.epicgames.launcher://apps/" + CatalogNamespace + "%3A" + CatalogItemId + "%3A" + AppName + "?action=launch&silent=true";
+            AppLaunchString = "com.epicgames.launcher://apps/" + CatalogNamespace + "%3A" + CatalogItemId + "%3A" + AppName + "?action=launch";
+        }
+
+        public override bool StartGame()
+        {
+            if (!Process.GetProcessesByName("EpicGamesLauncher").Any())
+            {
+                using Process? LauncherProcess = Process.Start(EpicGamesLauncherData.LauncherPath!);
+                if (LauncherProcess is not null)
+                {
+                    if (!LauncherProcess.WaitForInputIdle(10000))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            using Process? GameProcess = Process.Start(AppLaunchString!);
+            if (GameProcess is not null)
+            {
+                GameProcess.EnableRaisingEvents = true;
+                GameProcess.Exited += GameProcess_Exited;
+                IsRunning = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void GameProcess_Exited(object? sender, EventArgs e)
+        {
+            IsRunning = false;
+        }
+
+        public override bool UninstallGame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool CreateShortcut()
+        {
+            string DesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            using StreamWriter Writer = new(DesktopPath + "\\" + Title + ".url");
+            Writer.WriteLine("[InternetShortcut]");
+            Writer.WriteLine("URL=" + AppLaunchString);
+            Writer.WriteLine("IconIndex=0");
+            Writer.WriteLine("IconFile=" + GamePath + "\\" + ExecutableName);
+            Writer.Flush();
+            return true;
         }
     }
 }

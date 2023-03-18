@@ -46,12 +46,12 @@ namespace GameManager.Viewmodels
         {
             if (SteamLauncherData.LauncherPath is not null)
             {
-                if (SteamLauncherData.LibrariesPath is not null && SteamLauncherData.LibrariesPath.Count > 0)
+                if (SteamLauncherData.LibrariesPath.Count > 0)
                 {
-                    DirectoryInfo[] LibraryDirectories = new DirectoryInfo[SteamLauncherData.LibrariesPath!.Count];
+                    DirectoryInfo[] LibraryDirectories = new DirectoryInfo[SteamLauncherData.LibrariesPath.Count];
                     for (byte i = 0; i < LibraryDirectories.Length; i++)
                     {
-                        LibraryDirectories[i] = new(SteamLauncherData.LibrariesPath![i]);
+                        LibraryDirectories[i] = new(SteamLauncherData.LibrariesPath[i]);
                     }
                     FileInfo[] AppManifests;
                     SteamGameData GameData;

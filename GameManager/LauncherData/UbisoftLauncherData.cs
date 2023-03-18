@@ -44,7 +44,7 @@ namespace GameManager.LauncherData
             using RegistryKey? UbisoftKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\WOW6432Node\Ubisoft\Launcher");
             if (UbisoftKey is not null)
             {
-                return (string?)UbisoftKey.GetValue("InstallDir");
+                return ((string?)UbisoftKey.GetValue("InstallDir")) + "UbisoftGameLauncher.exe";
             }
             else
             {
@@ -58,13 +58,20 @@ namespace GameManager.LauncherData
         /// <returns>Il percorso della libreria.</returns>
         private static string? FindUbisoftLauncherLibraryPath()
         {
-            using StreamReader ConfigFile = new(File.OpenRead(Environment.GetEnvironmentVariable("LocalAppData") + "\\Ubisoft Game Launcher\\settings.yaml"));
-            string Line = string.Empty;
-            while (!Line.Contains("game_installation_path"))
+            if (File.Exists(Environment.GetEnvironmentVariable("LocalAppData") + "\\Ubisoft Game Launcher\\settings.yaml"))
             {
-                Line = ConfigFile.ReadLine()!;
+                using StreamReader ConfigFile = new(File.OpenRead(Environment.GetEnvironmentVariable("LocalAppData") + "\\Ubisoft Game Launcher\\settings.yaml"));
+                string Line = string.Empty;
+                while (!Line.Contains("game_installation_path"))
+                {
+                    Line = ConfigFile.ReadLine()!;
+                }
+                return Line.Replace("game_installation_path:", string.Empty).Replace('/', '\\').TrimStart();
             }
-            return Line.Replace("game_installation_path:", string.Empty).Replace('/', '\\').TrimStart();
+            else
+            {
+                return null;
+            }
         }
     }
 }

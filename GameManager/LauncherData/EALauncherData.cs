@@ -25,8 +25,9 @@ namespace GameManager.LauncherData
         /// </summary>
         public static void RetrieveEALauncherData()
         {
-            LauncherPath = Path.GetDirectoryName(FindEALauncherPath());
-            if (LauncherPath is not null )
+            string? ClientPath = FindEALauncherPath();
+            LauncherPath = ClientPath ?? Path.GetDirectoryName(ClientPath);
+            if (LauncherPath is not null)
             {
                 LibraryPath = FindEALibraryPath();
             }
@@ -45,7 +46,7 @@ namespace GameManager.LauncherData
             using RegistryKey? OriginKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\WOW6432Node\Electronic Arts\EA Desktop");
             if (OriginKey is not null)
             {
-                return (string?)OriginKey.GetValue("DesktopAppPath");
+                return (string?)OriginKey.GetValue("LauncherAppPath");
             }
             else
             {
@@ -62,16 +63,19 @@ namespace GameManager.LauncherData
             try
             {
                 DirectoryInfo EADesktopAppDataFolder = new(Environment.GetEnvironmentVariable("LocalAppData") + "\\Electronic Arts\\EA Desktop");
-                IEnumerable<FileInfo> UserFiles = EADesktopAppDataFolder.EnumerateFiles("user_*.ini");
-                foreach (FileInfo file in UserFiles)
+                if (EADesktopAppDataFolder.Exists)
                 {
-                    using StreamReader ConfigFile = new(File.OpenRead(file.FullName));
-                    string Line = string.Empty;
-                    while (!Line.Contains("user.downloadinplacedir"))
+                    IEnumerable<FileInfo> UserFiles = EADesktopAppDataFolder.EnumerateFiles("user_*.ini");
+                    foreach (FileInfo file in UserFiles)
                     {
-                        Line = ConfigFile.ReadLine()!;
+                        using StreamReader ConfigFile = new(File.OpenRead(file.FullName));
+                        string Line = string.Empty;
+                        while (!Line.Contains("user.downloadinplacedir"))
+                        {
+                            Line = ConfigFile.ReadLine()!;
+                        }
+                        return Line.Replace("user.downloadinplacedir=", string.Empty);
                     }
-                    return Line.Replace("user.downloadinplacedir=", string.Empty);
                 }
                 return null;
             }
